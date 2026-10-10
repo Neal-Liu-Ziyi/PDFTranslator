@@ -1,0 +1,2 @@
+# Compatible with the existing fenghua Torch/Transformers runtime on Apple Silicon.
+mineru[pipeline]==3.4.5

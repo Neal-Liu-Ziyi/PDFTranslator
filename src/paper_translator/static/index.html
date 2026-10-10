@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>PDFTranslator</title><link rel="stylesheet" href="/style.css"><script defer src="/app.js"></script></head>
+<body>
+<header><div class="brand"><span class="logo">P</span><div><strong>PDFTranslator</strong><span class="subtitle" data-i18n="subtitle">文档解析工作台</span></div></div><div class="header-tools"><span class="local" data-i18n="localWorkspace">● 本地工作空间</span><label class="language-switch"><span data-i18n="interfaceLanguage">界面语言</span><select id="ui-language" aria-label="Interface language"><option value="zh-CN">中文</option><option value="en">English</option></select></label></div></header>
+<div class="workspace">
+<aside>
+<div class="intro"><span class="eyebrow" data-i18n="eyebrow">PDF → 结构化内容</span><h1 data-i18n="introTitle">从论文，到内容。</h1><p data-i18n="introText">上传一份 PDF，查看文字、图片与公式，为后续处理做好准备。</p></div>
+<form id="upload-form">
+<label class="dropzone" id="dropzone" for="file"><span class="upload-icon">↑</span><strong id="file-label" data-i18n="choosePdf">选择或拖入 PDF</strong><small id="file-info" data-i18n="oneFile">每次处理一个文件</small><input id="file" type="file" accept=".pdf,application/pdf"></label>
+<label class="field-label" for="engine" data-i18n="parseMethod">解析方式</label><select id="engine"><option value="auto" data-i18n="engineAuto">自动 · 优先 MinerU</option><option value="mineru" data-i18n="engineMineru">MinerU · OCR 与结构识别</option><option value="pymupdf" data-i18n="engineFast">快速提取 · PDF 文字层</option></select>
+<label class="field-label" for="ocr-language" data-i18n="ocrLanguage">论文语言（OCR）</label><select id="ocr-language"><option value="ch" data-i18n="ocrCjk">英文 / 日文 / 中文</option><option value="korean" data-i18n="ocrKorean">韩文（可包含英文）</option></select>
+<p id="engine-note" class="hint" data-i18n="checkingMineru">正在检查 MinerU 服务…</p><button id="submit" class="primary" type="submit" disabled><span data-i18n="startParse">开始解析</span> <span>→</span></button>
+<p id="upload-status" class="hint" role="status" aria-live="polite"></p>
+</form>
+<div class="history-title"><h2 id="history-heading" data-i18n="history">处理记录</h2><div><button id="toggle-trash" class="link-button" aria-pressed="false">回收站</button><button id="refresh" class="link-button" data-i18n="refresh">刷新</button></div></div><div id="history" class="history"></div>
+<p id="history-status" class="hint" role="status" aria-live="polite"></p>
+<p class="storage-note" data-i18n="storageNote">原文件和结果保存在本机，刷新页面后可继续查看。</p>
+</aside>
+<main>
+<div id="empty" class="empty"><span class="paper-icon">▤</span><h2 data-i18n="emptyTitle">在这里查看你的论文</h2><p data-i18n="emptyText">左侧上传文件后，原文与解析内容会并排显示。</p><div class="features"><span data-i18n="featureText">文字与层级</span><span data-i18n="featureImages">图片资源</span><span data-i18n="featureJson">公式与 JSON</span></div></div>
+<section id="detail" hidden>
+<div class="document-head"><div><span class="eyebrow" data-i18n="documentPreview">文档预览</span><h2 id="document-title"></h2><p id="summary"></p></div><div class="actions"><button id="retry" hidden data-i18n="retryParse">重新解析</button><a id="download" class="button" hidden data-i18n="downloadJson">下载 JSON ↓</a></div></div>
+<div id="notice" role="status" aria-live="polite"></div>
+<section class="translation-tools" aria-label="翻译与导出" data-i18n-aria-label="translationExport">
+<div class="workflow-row"><div><strong id="translation-title">翻译成中文</strong><label class="translation-target"><span data-i18n="translateTo">翻译成</span><select id="target-language" aria-label="目标语言" data-i18n-aria-label="targetLanguage"><option value="zh-CN">简体中文</option><option value="en">English</option><option value="ja">日本語</option><option value="ko">한국어</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="es">Español</option><option value="ru">Русский</option></select></label><p id="translation-status" class="hint" data-i18n="translationReady">解析完成后可开始翻译。</p></div><button id="translate">开始翻译</button></div>
+<progress id="translation-progress" max="100" value="0" hidden aria-label="翻译进度"></progress>
+<details><summary data-i18n="glossarySummary">术语表（可选）</summary><textarea id="glossary" maxlength="4000" rows="4" data-i18n-placeholder="glossaryPlaceholder" placeholder="每行一个术语，例如：random forest = 随机森林"></textarea><p class="hint" data-i18n="glossaryHint">修改术语表后会重新翻译全文；相同配置重试时保留已完成的译文。</p></details>
+<div class="workflow-row export-row"><div><strong data-i18n="buildTranslatedPdf">生成译文 PDF</strong><p id="pdf-status" class="hint" data-i18n="pdfReady">全文翻译完成后可生成。</p></div><div class="actions"><select id="layout" aria-label="译文排版" data-i18n-aria-label="translationLayout"><option value="single" data-i18n="singleColumn">单栏排版</option><option value="double" data-i18n="doubleColumn">双栏排版</option></select><button id="build-pdf" disabled data-i18n="buildPdf">生成 PDF</button><a id="download-pdf" class="button" hidden data-i18n="downloadPdf">下载 PDF</a><a id="download-latex" class="button" hidden data-i18n="downloadLatex">LaTeX 源文件</a></div></div>
+</section>
+<div class="panels">
+<section class="panel"><div class="panel-toolbar"><strong data-i18n="original">原文</strong><div class="pager"><button id="previous" aria-label="上一页" data-i18n-aria-label="previousPage">←</button><select id="page" aria-label="查看页码" data-i18n-aria-label="pageSelect"></select><button id="next" aria-label="下一页" data-i18n-aria-label="nextPage">→</button></div></div><div class="preview-scroll"><img id="preview" alt="PDF 原文页面" data-i18n-alt="sourcePage"></div></section>
+<section class="panel"><div class="panel-toolbar tabs" role="tablist" aria-label="查看解析内容" data-i18n-aria-label="parsedContent"><button role="tab" aria-selected="true" data-tab="content" data-i18n="originalContent">原文内容</button><button role="tab" aria-selected="false" data-tab="translated" data-i18n="translatedContent">译文</button><button role="tab" aria-selected="false" data-tab="images" data-i18n="images">图片</button><button role="tab" aria-selected="false" data-tab="equations" data-i18n="equations">公式</button><button role="tab" aria-selected="false" data-tab="json">JSON</button></div><div id="result" class="result" role="tabpanel"></div></section>
+</div></section>
+</main></div>
+<dialog id="delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-description">
+<h2 id="delete-title" data-i18n="confirmDelete">删除这条处理记录？</h2><p id="delete-filename"></p>
+<p id="delete-description" data-i18n="deleteDescription">原文、解析结果、译文和生成的 PDF 将一起移入回收站，可随时恢复。不会影响你电脑上原来的 PDF 文件。</p>
+<p id="delete-error" role="alert" class="delete-error" hidden></p>
+<div class="actions"><button id="delete-cancel" autofocus data-i18n="cancel">取消</button><button id="delete-confirm" class="danger" data-i18n="moveToTrash">移入回收站</button></div>
+</dialog>
+</body></html>

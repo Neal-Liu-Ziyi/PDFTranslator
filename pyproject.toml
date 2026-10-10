@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paper-translator"
+version = "0.1.0"
+description = "Extract a PDF into a structured JSON document for translation and LaTeX rendering."
+requires-python = ">=3.11"
+dependencies = [
+  "PyMuPDF>=1.24,<2",
+  "beautifulsoup4>=4.13,<5",
+  "python-dotenv>=1,<2",
+]
+
+[project.scripts]
+paper-parse = "paper_translator.cli:main"
+paper-web = "paper_translator.web:main"
+
+[tool.setuptools.package-data]
+paper_translator = ["static/*"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

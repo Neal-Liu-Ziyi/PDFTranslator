@@ -1,0 +1,17 @@
+.data/
+.mineru.json
+.env
+.env.*
+!.env.example
+apikey*.txt
+api_key*.txt
+*.pem
+*.log
+.venv/
+tmp/
+*.pdf
+output/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.DS_Store
